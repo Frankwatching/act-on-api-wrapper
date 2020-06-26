@@ -1,0 +1,21 @@
+{
+    "name": "frankwatching/act-on",
+    "description": "PHP wrapper for the Act-On API",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.5",
+        "ext-curl": "^7.3"
+    },
+    "authors": [
+        {
+            "name": "Frankwatching DX",
+            "email": "dx@frankwatching.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Frankwatching\\ActOn\\": "/src"
+        }
+    }
+}
