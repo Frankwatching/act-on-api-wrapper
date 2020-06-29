@@ -3,12 +3,10 @@
 namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
 
 class Client extends ActOn {
 	public function fetchTokens( $username, $password) {
-
-		$client = new GuzzleClient();
-
 		$body = [
 			'grant_type'    => 'password',
 			'client_id'     => $this->client_id,
@@ -17,7 +15,7 @@ class Client extends ActOn {
 			'password'      => $password,
 		];
 
-		$response = $client->post( '/token', [
+		$response = $this->getClient()->post( '/token', [
 			'form_params' => $body
 		] );
 
@@ -27,9 +25,6 @@ class Client extends ActOn {
 	}
 
 	public function refreshTokens( $refreshToken ) {
-
-		$client = new GuzzleClient();
-
 		$body = [
 			'grant_type'    => 'refresh_token',
 			'client_id'     => $this->client_id,
@@ -37,7 +32,7 @@ class Client extends ActOn {
 			'refresh_token' => $refreshToken,
 		];
 
-		$response = $client->post( '/token', [
+		$response = $this->guzzle->post( '/token', [
 			'form_params' => $body
 		] );
 
@@ -47,23 +42,35 @@ class Client extends ActOn {
 	}
 
 	public function post( $endpoint, $body ) {
-		$response = self::$client->post( $endpoint, [
-			'form_params' => $body
-		] );
+		try {
+			$response = $this->guzzle->post( $endpoint, [
+				'form_params' => $body
+			] );
+		} catch ( RequestException $e ) {
+			var_dump( $e );
+		}
 
 		return json_decode( $response->getBody()->getContents() );
 	}
 
 	public function get( $endpoint ) {
-		$response = self::$client->get( $endpoint );
+		try {
+			$response = $this->guzzle->get( $endpoint );
+		} catch ( RequestException $e ) {
+			var_dump( $e );
+		}
 
 		return json_decode( $response->getBody()->getContents() );
 	}
 
 	public function put( $endpoint, $body ) {
-		$response = self::$client->put( $endpoint, [
-			'body' => $body
-		] );
+		try {
+			$response = $this->guzzle->put( $endpoint, [
+				'body' => $body
+			] );
+		} catch ( RequestException $e ) {
+			var_dump( $e );
+		}
 
 		return json_decode( $response->getBody()->getContents() );
 	}
