@@ -5,10 +5,6 @@ namespace Frankwatching\ActOn;
 use GuzzleHttp\Client as GuzzleClient;
 
 class Client extends ActOn {
-	public function __construct( $client_id, $client_secret, $username, $password ) {
-		parent::__construct( $client_id, $client_secret, $username, $password );
-	}
-
 	public function fetchTokens( $username, $password) {
 
 		$client = new GuzzleClient();
@@ -51,7 +47,7 @@ class Client extends ActOn {
 	}
 
 	public function post( $endpoint, $body ) {
-		$response = $this->client->post( $endpoint, [
+		$response = self::$client->post( $endpoint, [
 			'form_params' => $body
 		] );
 
@@ -59,13 +55,13 @@ class Client extends ActOn {
 	}
 
 	public function get( $endpoint ) {
-		$response = $this->client->get( $endpoint );
+		$response = self::$client->get( $endpoint );
 
 		return json_decode( $response->getBody()->getContents() );
 	}
 
 	public function put( $endpoint, $body ) {
-		$response = $this->client->put( $endpoint, [
+		$response = self::$client->put( $endpoint, [
 			'body' => $body
 		] );
 

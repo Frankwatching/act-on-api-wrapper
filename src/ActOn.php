@@ -4,6 +4,7 @@ namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Client;
 use Frankwatching\ActOn\Client as ActOnClient;
+use Frankwatching\ActOn\Contact;
 
 class ActOn {
 
@@ -12,16 +13,20 @@ class ActOn {
 	protected $username;
 	protected $password;
 	protected $guzzle;
-	protected $client;
+	protected $contact;
 
-	public function __construct( $client_id, $client_secret ) {
+	protected static $client;
+
+	public function init( $client_id, $client_secret ) {
 
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
 //		$this->username      = $username;
 //		$this->password      = $password;
 
-		$this->client = new Client( [
+		$this->contact = new \Frankwatching\ActOn\Contact();
+
+		self::$client = new Client( [
 			'base_uri' => 'https://restapi.actonsoftware.com'
 		] );
 	}
