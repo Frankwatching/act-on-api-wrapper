@@ -14,14 +14,14 @@ class ActOn {
 	protected $guzzle;
 	protected $client;
 
-	public function __construct( $client_id, $client_secret, $username, $password ) {
+	public function __construct( $client_id, $client_secret ) {
 
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
-		$this->username      = $username;
-		$this->password      = $password;
+//		$this->username      = $username;
+//		$this->password      = $password;
 
-		$this->guzzle = new Client( [
+		$this->client = new Client( [
 			'base_uri' => 'https://restapi.actonsoftware.com'
 		] );
 	}
