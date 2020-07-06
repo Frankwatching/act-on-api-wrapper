@@ -3,8 +3,6 @@
 namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Client as GuzzleClient;
-use Frankwatching\ActOn\Client;
-use Frankwatching\ActOn\Contact;
 
 class ActOn {
 
@@ -14,32 +12,37 @@ class ActOn {
 	protected $password;
 	protected $contact;
 	protected $headers = [];
+	protected $access_token;
 
 	public $client;
+	public $lists;
 	public $guzzle;
 
-	public function init( $client_id, $client_secret, $acton_username, $acton_password ) {
+	public function init( $client_id, $client_secret, $username, $password ) {
 
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
 
-		$this->client  = new \Frankwatching\ActOn\Client( $client_id, $client_secret, $acton_username, $acton_password );
-		$this->contact = new \Frankwatching\ActOn\Contact();
-//
-//		$this->guzzle = new GuzzleClient( [
-//			'base_uri' => 'https://restapi.actonsoftware.com'
-//		] );
+		$this->client  = new Client( $client_id, $client_secret, $username, $password );
+		$this->contact = new Contact();
+		$this->lists = new Lists();
 	}
 
 	public function getClient() {
 
 		if ( null === $this->guzzle ) {
 			$this->guzzle = new GuzzleClient( [
-				'base_uri' => 'https://restapi.actonsoftware.com'
+				'base_uri' => 'https://restapi.actonsoftware.com/api'
 			] );
 		}
 
 		return $this->guzzle;
+	}
+
+	public function setAccessToken( $access_token ) {
+		$this->access_token = $access_token;
+
+		$this->setClientHeaders( 'Authorization', 'Bearer: ' . $access_token );
 	}
 
 	public function setClientHeaders( $header, $value ) {

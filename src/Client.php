@@ -14,6 +14,9 @@ class Client extends ActOn {
 		$this->password = $password;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function fetchTokens() {
 
 		$body = [
@@ -35,6 +38,11 @@ class Client extends ActOn {
 		return $tokens;
 	}
 
+	/**
+	 * @param $refreshToken
+	 *
+	 * @return mixed
+	 */
 	public function refreshTokens( $refreshToken ) {
 		$body = [
 			'grant_type'    => 'refresh_token',
@@ -54,7 +62,15 @@ class Client extends ActOn {
 		return $tokens;
 	}
 
+	/**
+	 * @param $endpoint
+	 * @param $body
+	 *
+	 * @return mixed
+	 * @throws \GuzzleHttp\Exception\GuzzleException
+	 */
 	public function post( $endpoint, $body ) {
+
 		try {
 			$response = $this->getClient()->request( 'POST', $endpoint, [
 				'form_params' => $body
@@ -68,6 +84,11 @@ class Client extends ActOn {
 		return json_decode( $response->getBody()->getContents() );
 	}
 
+	/**
+	 * @param $endpoint
+	 *
+	 * @return mixed
+	 */
 	public function get( $endpoint ) {
 		try {
 			$response = $this->getClient()->get( $endpoint );
@@ -78,6 +99,12 @@ class Client extends ActOn {
 		return json_decode( $response->getBody()->getContents() );
 	}
 
+	/**
+	 * @param $endpoint
+	 * @param $body
+	 *
+	 * @return mixed
+	 */
 	public function put( $endpoint, $body ) {
 		try {
 			$response = $this->getClient()->put( $endpoint, [
