@@ -4,15 +4,24 @@ namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
+use Frankwatching\ActOn\ActOn;
 
 class Client extends ActOn {
-	public function fetchTokens( $username, $password) {
+	public function __construct( $client_id, $client_secret, $username, $password ) {
+		$this->client_id = $client_id;
+		$this->client_secret = $client_secret;
+		$this->username = $username;
+		$this->password = $password;
+	}
+
+	public function fetchTokens() {
+
 		$body = [
 			'grant_type'    => 'password',
 			'client_id'     => $this->client_id,
 			'client_secret' => $this->client_secret,
-			'username'      => $username,
-			'password'      => $password,
+			'username'      => $this->username,
+			'password'      => $this->password,
 		];
 
 		$response = $this->getClient()->post( '/token', [
@@ -20,6 +29,8 @@ class Client extends ActOn {
 		] );
 
 		$tokens = json_decode( $response->getBody()->getContents() );
+
+		$this->setClientHeaders( 'Authorization', 'Bearer: ' . $tokens->access_token );
 
 		return $tokens;
 	}
@@ -32,19 +43,23 @@ class Client extends ActOn {
 			'refresh_token' => $refreshToken,
 		];
 
-		$response = $this->guzzle->post( '/token', [
+		$response = $this->getClient()->post( '/token', [
 			'form_params' => $body
 		] );
 
 		$tokens = json_decode( $response->getBody()->getContents() );
+
+		$this->setClientHeaders( 'Authorization', 'Bearer: ' . $tokens->access_token );
 
 		return $tokens;
 	}
 
 	public function post( $endpoint, $body ) {
 		try {
-			$response = $this->guzzle->post( $endpoint, [
+			$response = $this->getClient()->request( 'POST', $endpoint, [
 				'form_params' => $body
+			], [
+				'headers' => $this->getClientHeaders()
 			] );
 		} catch ( RequestException $e ) {
 			var_dump( $e );
@@ -55,7 +70,7 @@ class Client extends ActOn {
 
 	public function get( $endpoint ) {
 		try {
-			$response = $this->guzzle->get( $endpoint );
+			$response = $this->getClient()->get( $endpoint );
 		} catch ( RequestException $e ) {
 			var_dump( $e );
 		}
@@ -65,7 +80,7 @@ class Client extends ActOn {
 
 	public function put( $endpoint, $body ) {
 		try {
-			$response = $this->guzzle->put( $endpoint, [
+			$response = $this->getClient()->put( $endpoint, [
 				'body' => $body
 			] );
 		} catch ( RequestException $e ) {
