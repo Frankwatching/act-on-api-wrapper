@@ -4,15 +4,47 @@ namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
-use Frankwatching\ActOn\ActOn;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\BadResponseException;
 
-class Client extends ActOn {
+use Exception;
+
+use Frankwatching\ActOn;
+
+class Client {
+
+	protected static $client;
+
+	static $lists;
+	private static $access_token;
+
 	public function __construct( $client_id, $client_secret, $username, $password ) {
-		$this->client_id = $client_id;
+		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
-		$this->username = $username;
-		$this->password = $password;
+		$this->username      = $username;
+		$this->password      = $password;
+
+		self::$client = new \GuzzleHttp\Client( [
+			'base_uri' => 'https://restapi.actonsoftware.com/api',
+		] );
 	}
+
+	public function setClient( $access_token ) {
+		self::$access_token = $access_token;
+		if ( null === self::$client ) {
+			self::$client = new \GuzzleHttp\Client( [
+				'base_uri' => 'https://restapi.actonsoftware.com/api',
+				'headers'  => [
+					'Authorization' => 'Bearer ' . $access_token,
+					'Content-type'  => 'multipart/form-data'
+
+				]
+			] );
+		}
+
+		self::$lists = new Lists();
+	}
+
 
 	/**
 	 * @return mixed
@@ -27,13 +59,11 @@ class Client extends ActOn {
 			'password'      => $this->password,
 		];
 
-		$response = $this->getClient()->post( '/token', [
+		$response = self::$client->post( '/token', [
 			'form_params' => $body
 		] );
 
 		$tokens = json_decode( $response->getBody()->getContents() );
-
-		$this->setClientHeaders( 'Authorization', 'Bearer: ' . $tokens->access_token );
 
 		return $tokens;
 	}
@@ -51,13 +81,11 @@ class Client extends ActOn {
 			'refresh_token' => $refreshToken,
 		];
 
-		$response = $this->getClient()->post( '/token', [
+		$response = self::$client->post( '/token', [
 			'form_params' => $body
 		] );
 
 		$tokens = json_decode( $response->getBody()->getContents() );
-
-		$this->setClientHeaders( 'Authorization', 'Bearer: ' . $tokens->access_token );
 
 		return $tokens;
 	}
@@ -69,19 +97,20 @@ class Client extends ActOn {
 	 * @return mixed
 	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
-	public function post( $endpoint, $body ) {
+	public static function post( $endpoint, $body ) {
+
+		$data = [
+			'form_params' => $body,
+			'debug' => true,
+		];
 
 		try {
-			$response = $this->getClient()->request( 'POST', $endpoint, [
-				'form_params' => $body
-			], [
-				'headers' => $this->getClientHeaders()
-			] );
-		} catch ( RequestException $e ) {
-			var_dump( $e );
-		}
+			$response = self::$client->request( 'POST', $endpoint, $data );
 
-		return json_decode( $response->getBody()->getContents() );
+			return json_decode( $response->getBody()->getContents() );
+		} catch ( BadResponseException $e ) {
+			throw new Exception( $e->getResponse()->getBody()->getContents() );
+		}
 	}
 
 	/**
@@ -91,7 +120,7 @@ class Client extends ActOn {
 	 */
 	public function get( $endpoint ) {
 		try {
-			$response = $this->getClient()->get( $endpoint );
+			$response = self::$client->request( 'GET', $endpoint );
 		} catch ( RequestException $e ) {
 			var_dump( $e );
 		}
@@ -107,7 +136,7 @@ class Client extends ActOn {
 	 */
 	public function put( $endpoint, $body ) {
 		try {
-			$response = $this->getClient()->put( $endpoint, [
+			$response = self::$client->request( 'PUT', $endpoint, [
 				'body' => $body
 			] );
 		} catch ( RequestException $e ) {
