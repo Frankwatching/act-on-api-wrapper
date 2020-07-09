@@ -2,13 +2,13 @@
 
 namespace Frankwatching\ActOn;
 
+ini_set( 'error_reporting', E_ALL );
+
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\BadResponseException;
-
 use Exception;
-
 use Frankwatching\ActOn;
 
 class Client {
@@ -19,15 +19,17 @@ class Client {
 	private static $access_token;
 	static $headers = [];
 
+	private static $base_path = '/api/1';
+
 	public function __construct( $client_id, $client_secret, $username, $password ) {
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
 		$this->username      = $username;
 		$this->password      = $password;
 
-		self::$client = new \GuzzleHttp\Client( [
-			'base_uri' => 'https://restapi.actonsoftware.com/api/1',
-		] );
+		self::$client = new \GuzzleHttp\Client([
+			'base_uri' => 'https://restapi.actonsoftware.com'
+		]);
 	}
 
 	public function setClient( $access_token ) {
@@ -40,7 +42,7 @@ class Client {
 
 		if ( null === self::$client ) {
 			self::$client = new \GuzzleHttp\Client( [
-				'base_uri' => 'https://restapi.actonsoftware.com/api/1',
+				'base_uri' => 'https://restapi.actonsoftware.com',
 			] );
 		}
 	}
@@ -59,11 +61,11 @@ class Client {
 			'password'      => $this->password,
 		];
 
-		$response = self::$client->post( '/token', [
+		$request = self::$client->post( '/token', [
 			'form_params' => $body
 		] );
 
-		$tokens = json_decode( $response->getBody()->getContents() );
+		$tokens = json_decode( $request->getBody()->getContents() );
 
 		return $tokens;
 	}
@@ -81,11 +83,11 @@ class Client {
 			'refresh_token' => $refreshToken,
 		];
 
-		$response = self::$client->post( '/token', [
+		$request = self::$client->post( '/token', [
 			'form_params' => $body
 		] );
 
-		$tokens = json_decode( $response->getBody()->getContents() );
+		$tokens = json_decode( $request->getBody()->getContents() );
 
 		return $tokens;
 	}
@@ -97,21 +99,33 @@ class Client {
 	 * @return mixed
 	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
-	public static function post( $endpoint, $body, $headers = [] ) {
-
-		$data = [
-			'form_params' => $body,
+	public static function post( $endpoint, $body, $headers = [], $multipart = false ) {
+		$options = [
 			'headers' => array_merge( self::$headers, $headers ),
 			'debug' => true
 		];
 
+		if ( $multipart ) {
+			$options['multipart'] = $body;
+		} else {
+			$options['json'] = $body;
+		}
+
+//		var_dump( $body );
+//		exit;
+
+//		var_dump( $options );
+//		exit;
+
+		var_dump( $options );
+		exit;
+
 		try {
+			$request = self::$client->request( 'POST', self::$base_path . $endpoint, $options );
 
-			$response = self::$client->request( 'POST', $endpoint, $data );
-
-			return json_decode( $response->getBody()->getContents() );
+			return json_decode( $request->getBody()->getContents() );
 		} catch ( BadResponseException $e ) {
-			var_dump( $e->getResponse()->getBody()->getContents() );
+			// var_dump( $e->getResponse()->getBody()->getContents() );
 
 			throw new Exception( $e->getResponse()->getBody()->getContents() );
 		}
@@ -124,12 +138,12 @@ class Client {
 	 */
 	public static function get( $endpoint ) {
 		try {
-			$response = self::$client->request( 'GET', $endpoint );
+			$request = self::$client->request( 'GET', $endpoint );
 		} catch ( RequestException $e ) {
-			var_dump( $e );
+			// var_dump( $e );
 		}
 
-		return json_decode( $response->getBody()->getContents() );
+		return json_decode( $request->getBody()->getContents() );
 	}
 
 	/**
@@ -140,13 +154,13 @@ class Client {
 	 */
 	public static function put( $endpoint, $body ) {
 		try {
-			$response = self::$client->request( 'PUT', $endpoint, [
+			$request = self::$client->request( 'PUT', $endpoint, [
 				'body' => $body
 			] );
 		} catch ( RequestException $e ) {
-			var_dump( $e );
+			// var_dump( $e );
 		}
 
-		return json_decode( $response->getBody()->getContents() );
+		return json_decode( $request->getBody()->getContents() );
 	}
 }
