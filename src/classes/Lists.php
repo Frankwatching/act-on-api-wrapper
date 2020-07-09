@@ -7,7 +7,7 @@ use Exception;
 use Frankwatching\ActOn\Client;
 
 class Lists {
-	public static function createList( $listname, array $uploadspecs = [], $quotecharacter = 'NONE', $foldername = '', $headings = '', $fieldseparator = '' ) {
+	public static function createList( $listname, $uploadspecs = [], $quotecharacter = 'NONE', $foldername = '', $headings = 'Y', $fieldseparator = 'COMMA' ) {
 		try {
 			$data = [
 				'listname'       => $listname,
@@ -18,14 +18,13 @@ class Lists {
 				'fieldseparator' => $fieldseparator,
 			];
 
-			$response = Client::post( '/1/list', $data );
+			$response = Client::post( '/list', $data, [
+				'Content-Type' => 'multipart/form-data'
+			] );
 
 			return $response;
 
 		} catch ( Exception $e ) {
-
-			var_dump( $e );
-			exit;
 
 			return false;
 		}

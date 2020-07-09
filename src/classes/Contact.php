@@ -2,16 +2,16 @@
 
 namespace Frankwatching\ActOn;
 
-class Contact extends ActOn {
+class Contact {
 	public function add( array $contact, $listId ) {
-		return $this->getClient()->post( "/list/$listId/record", $contact );
+		return Client::post( "/list/$listId/record", $contact );
 	}
 
 	public function get( $listId, $recordId ) {
-		return $this->getClient()->get( "/list/$listId/record/$recordId" );
+		return Client::get( "/list/$listId/record/$recordId" );
 	}
 
 	public function updateByEmail( $emailAddress, $listId, $contact ) {
-		return $this->getClient()->put( "/list/$listId/record?email=$emailAddress", $contact );
+		return Client::put( "/list/$listId/record?email=$emailAddress", $contact );
 	}
 }

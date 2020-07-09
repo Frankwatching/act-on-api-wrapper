@@ -17,6 +17,7 @@ class Client {
 
 	static $lists;
 	private static $access_token;
+	static $headers = [];
 
 	public function __construct( $client_id, $client_secret, $username, $password ) {
 		$this->client_id     = $client_id;
@@ -25,24 +26,23 @@ class Client {
 		$this->password      = $password;
 
 		self::$client = new \GuzzleHttp\Client( [
-			'base_uri' => 'https://restapi.actonsoftware.com/api',
+			'base_uri' => 'https://restapi.actonsoftware.com/api/1',
 		] );
 	}
 
 	public function setClient( $access_token ) {
 		self::$access_token = $access_token;
+
+		self::$headers = [
+			'Authorization' => 'Bearer ' . $access_token,
+			'Content-Type' => 'application/json'
+		];
+
 		if ( null === self::$client ) {
 			self::$client = new \GuzzleHttp\Client( [
-				'base_uri' => 'https://restapi.actonsoftware.com/api',
-				'headers'  => [
-					'Authorization' => 'Bearer ' . $access_token,
-					'Content-type'  => 'multipart/form-data'
-
-				]
+				'base_uri' => 'https://restapi.actonsoftware.com/api/1',
 			] );
 		}
-
-		self::$lists = new Lists();
 	}
 
 
@@ -97,18 +97,22 @@ class Client {
 	 * @return mixed
 	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
-	public static function post( $endpoint, $body ) {
+	public static function post( $endpoint, $body, $headers = [] ) {
 
 		$data = [
 			'form_params' => $body,
-			'debug' => true,
+			'headers' => array_merge( self::$headers, $headers ),
+			'debug' => true
 		];
 
 		try {
+
 			$response = self::$client->request( 'POST', $endpoint, $data );
 
 			return json_decode( $response->getBody()->getContents() );
 		} catch ( BadResponseException $e ) {
+			var_dump( $e->getResponse()->getBody()->getContents() );
+
 			throw new Exception( $e->getResponse()->getBody()->getContents() );
 		}
 	}
@@ -118,7 +122,7 @@ class Client {
 	 *
 	 * @return mixed
 	 */
-	public function get( $endpoint ) {
+	public static function get( $endpoint ) {
 		try {
 			$response = self::$client->request( 'GET', $endpoint );
 		} catch ( RequestException $e ) {
@@ -134,7 +138,7 @@ class Client {
 	 *
 	 * @return mixed
 	 */
-	public function put( $endpoint, $body ) {
+	public static function put( $endpoint, $body ) {
 		try {
 			$response = self::$client->request( 'PUT', $endpoint, [
 				'body' => $body

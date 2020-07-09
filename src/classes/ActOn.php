@@ -37,7 +37,7 @@ class ActOn {
 
 		if ( null === $this->guzzle ) {
 			$this->guzzle = new GuzzleClient( [
-				'base_uri' => 'https://restapi.actonsoftware.com/api'
+				'base_uri' => 'https://restapi.actonsoftware.com/api/1'
 			] );
 		}
 
