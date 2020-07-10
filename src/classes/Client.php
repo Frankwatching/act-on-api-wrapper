@@ -37,7 +37,7 @@ class Client {
 
 		self::$headers = [
 			'Authorization' => 'Bearer ' . $access_token,
-			'Content-Type' => 'application/json'
+//			'Content-Type' => 'application/json'
 		];
 
 		if ( null === self::$client ) {
@@ -137,10 +137,16 @@ class Client {
 	 * @return mixed
 	 */
 	public static function get( $endpoint ) {
+
+		$options = [
+			'headers' => self::$headers,
+		];
+
 		try {
-			$request = self::$client->request( 'GET', $endpoint );
-		} catch ( RequestException $e ) {
-			// var_dump( $e );
+			$request = self::$client->request( 'GET', self::$base_path . $endpoint, $options );
+		} catch ( BadResponseException $e ) {
+			 var_dump( $e );
+			 exit;
 		}
 
 		return json_decode( $request->getBody()->getContents() );

@@ -51,4 +51,14 @@ class Lists {
 			return false;
 		}
 	}
+
+	public static function getListsOfAssets() {
+		try {
+			$response = Client::get( '/list?listingtype=CONTACT_LIST' );
+
+			return $response;
+		} catch( Exception $e ) {
+			return false;
+		}
+	}
 }
