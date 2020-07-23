@@ -23,10 +23,6 @@ class Lists {
 					'contents' => $quotecharacter,
 				],
 				[
-					'name' => 'foldername',
-					'contents' => $foldername,
-				],
-				[
 					'name' => 'headings',
 					'contents' => $headings,
 				],

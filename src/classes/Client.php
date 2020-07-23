@@ -27,9 +27,9 @@ class Client {
 		$this->username      = $username;
 		$this->password      = $password;
 
-		self::$client = new \GuzzleHttp\Client([
+		self::$client = new \GuzzleHttp\Client( [
 			'base_uri' => 'https://restapi.actonsoftware.com'
-		]);
+		] );
 	}
 
 	public function setClient( $access_token ) {
@@ -37,7 +37,7 @@ class Client {
 
 		self::$headers = [
 			'Authorization' => 'Bearer ' . $access_token,
-//			'Content-Type' => 'application/json'
+			'Content-Type'  => 'application/json'
 		];
 
 		if ( null === self::$client ) {
@@ -102,7 +102,7 @@ class Client {
 	public static function post( $endpoint, $body, $headers = [], $multipart = false ) {
 		$options = [
 			'headers' => array_merge( self::$headers, $headers ),
-			'debug' => true
+			'debug'   => true
 		];
 
 		if ( $multipart ) {
@@ -111,22 +111,25 @@ class Client {
 			$options['json'] = $body;
 		}
 
+		var_dump( $options );
+		exit;
+
 //		var_dump( $body );
 //		exit;
 
 //		var_dump( $options );
 //		exit;
 
-		var_dump( $options );
-		exit;
+//		var_dump( $options );
+//		exit;
 
 		try {
 			$request = self::$client->request( 'POST', self::$base_path . $endpoint, $options );
 
 			return json_decode( $request->getBody()->getContents() );
 		} catch ( BadResponseException $e ) {
-			// var_dump( $e->getResponse()->getBody()->getContents() );
-
+			 echo $e->getResponse()->getBody()->getContents();
+//
 			throw new Exception( $e->getResponse()->getBody()->getContents() );
 		}
 	}
@@ -145,11 +148,11 @@ class Client {
 		try {
 			$request = self::$client->request( 'GET', self::$base_path . $endpoint, $options );
 		} catch ( BadResponseException $e ) {
-			 var_dump( $e );
-			 exit;
+			var_dump( $e );
+			exit;
 		}
 
-		return json_decode( $request->getBody()->getContents() );
+		return json_decode( $request->getBody()->getContents(), true );
 	}
 
 	/**
@@ -159,12 +162,20 @@ class Client {
 	 * @return mixed
 	 */
 	public static function put( $endpoint, $body ) {
+
+		$options = [
+			'headers' => self::$headers,
+			'json'    => $body,
+		];
+
+		var_dump( $options );
+		exit;
+
 		try {
-			$request = self::$client->request( 'PUT', $endpoint, [
-				'body' => $body
-			] );
-		} catch ( RequestException $e ) {
-			// var_dump( $e );
+			$request = self::$client->request( 'PUT', self::$base_path . $endpoint, $options );
+		} catch ( BadResponseException $e ) {
+			var_dump( $e );
+			exit;
 		}
 
 		return json_decode( $request->getBody()->getContents() );
