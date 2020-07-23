@@ -7,6 +7,8 @@ use Exception;
 use Frankwatching\ActOn\Client;
 
 class Lists {
+	private static $lists = null;
+
 	public static function createList( $listname, $uploadspecs = [], $quotecharacter = 'NONE', $foldername = '', $headings = 'Y', $fieldseperator = 'COMMA' ) {
 		try {
 			$data = [
@@ -49,12 +51,31 @@ class Lists {
 	}
 
 	public static function getListsOfAssets() {
-		try {
-			$response = Client::get( '/list?listingtype=CONTACT_LIST' );
 
-			return $response;
-		} catch( Exception $e ) {
-			return false;
+		if ( null === self::$lists ) {
+			try {
+
+				self::$lists = Client::get( '/list?listingtype=CONTACT_LIST' );
+			} catch( Exception $e ) {
+				return [];
+			}
 		}
+
+		return self::$lists['result'];
+	}
+
+	public static function getListByName( $name ) {
+		$lists = self::getListsOfAssets();
+
+		$lists = array_filter( $lists, function( $list ) use ( $name ) {
+			return $list['name'] === $name;
+		} );
+
+		if ( ! empty( $lists ) ) {
+			$lists = reset( $lists );
+			return $lists;
+		}
+
+		return false;
 	}
 }
