@@ -85,12 +85,10 @@ class Lists {
 			$list = Client::get( "/list/$listId" );
 
 			return $list['headers'];
-
-			var_dump( $list );
-			exit;
-
 		} catch( Exception $e ) {
-			return [];
+			return [
+				'Could not download list.'
+			];
 		}
 	}
 }
