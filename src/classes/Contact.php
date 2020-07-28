@@ -23,7 +23,7 @@ class Contact {
 		try {
 			$contact = Client::get( "/list/lookup/$listId?email=$emailAddress" );
 		} catch( \Exception $e ) {
-			return $e->getCode();
+			return false;
 		}
 
 		return $contact;
