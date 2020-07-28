@@ -3,8 +3,8 @@
 namespace Frankwatching\ActOn;
 
 class Contact {
-	public static function add( array $contact, $listId ) {
-		return Client::post( "/list/$listId/record", $contact );
+	public static function add( array $contact, $listId, $returnContact ) {
+		return Client::post( "/list/$listId/record?returncontact=$returnContact", $contact );
 	}
 
 	public static function get( $listId, $recordId ) {
@@ -20,6 +20,12 @@ class Contact {
 	}
 
 	public static function getByEmail( $emailAddress, $listId ) {
-		return Client::get( "/list/lookup/$listId?email=$emailAddress" );
+		try {
+			$contact = Client::get( "/list/lookup/$listId?email=$emailAddress" );
+		} catch( \Exception $e ) {
+			return $e->getCode();
+		}
+
+		return $contact;
 	}
 }
