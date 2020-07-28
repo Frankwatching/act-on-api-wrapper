@@ -126,7 +126,7 @@ class Client {
 		try {
 			$request = self::$client->request( 'POST', self::$base_path . $endpoint, $options );
 
-			return json_decode( $request->getBody()->getContents() );
+			return json_decode( $request->getBody()->getContents(), true );
 		} catch ( BadResponseException $e ) {
 			throw new Exception( $e );
 		}
