@@ -4,7 +4,12 @@ namespace Frankwatching\ActOn;
 
 class Contact {
 	public static function add( array $contact, $listId, $returnContact = 'N' ) {
-		return Client::post( "/list/$listId/record?returncontact=$returnContact", $contact );
+		try {
+			return Client::post( "/list/$listId/record?returncontact=$returnContact", $contact );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
 	}
 
 	public static function get( $listId, $recordId ) {

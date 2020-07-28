@@ -128,9 +128,7 @@ class Client {
 
 			return json_decode( $request->getBody()->getContents() );
 		} catch ( BadResponseException $e ) {
-			 echo $e->getResponse()->getBody()->getContents();
-//
-			throw new Exception( $e->getResponse()->getBody()->getContents() );
+			throw new Exception( $e );
 		}
 	}
 
