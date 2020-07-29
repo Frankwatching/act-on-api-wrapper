@@ -17,11 +17,13 @@ class Contact {
 	}
 
 	public static function updateByEmail( $emailAddress, $listId, $contact ) {
+		try {
+			$result = Client::put( "/list/$listId/record?email=$emailAddress", $contact );
+		} catch( \Exception $e ) {
+			return $e;
+		}
 
-		var_dump( "/list/$listId/record?email=$emailAddress" );
-		exit;
-
-		return Client::put( "/list/$listId/record?email=$emailAddress", $contact );
+		return $result;
 	}
 
 	public static function getByEmail( $emailAddress, $listId ) {
