@@ -9,7 +9,7 @@ use Frankwatching\ActOn\Client;
 class Lists {
 	private static $lists = null;
 
-	public static function createList( $listname, $uploadspecs = [], $quotecharacter = 'NONE', $foldername = '', $headings = 'Y', $fieldseperator = 'COMMA' ) {
+	public static function createList( $listname, $uploadspecs = [], $quotecharacter = 'SINGLE_QUOTE', $foldername = '', $headings = 'Y', $fieldseperator = 'COMMA' ) {
 		try {
 			$data = [
 				[
@@ -24,14 +24,14 @@ class Lists {
 					'name' => 'quotecharacter',
 					'contents' => $quotecharacter,
 				],
-				[
-					'name' => 'headings',
-					'contents' => $headings,
-				],
-				[
-					'name' => 'fieldseperator',
-					'contents' => $fieldseperator
-				]
+//				[
+//					'name' => 'headings',
+//					'contents' => $headings,
+//				],
+//				[
+//					'name' => 'fieldseperator',
+//					'contents' => $fieldseperator
+//				]
 //				'listname'       => $listname,
 //				'uploadspecs'    => json_encode( $uploadspecs ),
 //				'quotecharacter' => $quotecharacter,
@@ -46,7 +46,7 @@ class Lists {
 
 			return $response;
 		} catch ( Exception $e ) {
-			return false;
+			return $e;
 		}
 	}
 

@@ -169,14 +169,10 @@ class Client {
 			'json'    => $body,
 		];
 
-		var_dump( $options );
-		exit;
-
 		try {
 			$request = self::$client->request( 'PUT', self::$base_path . $endpoint, $options );
 		} catch ( BadResponseException $e ) {
-			var_dump( $e );
-			exit;
+			throw new Exception( $e->getCode() );
 		}
 
 		return json_decode( $request->getBody()->getContents() );
