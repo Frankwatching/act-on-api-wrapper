@@ -21,11 +21,15 @@ class Client {
 
 	private static $base_path = '/api/1';
 
-	public function __construct( $client_id, $client_secret, $username, $password ) {
+	public function __construct( $client_id, $client_secret, $username, $password, $base_path = null ) {
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
 		$this->username      = $username;
 		$this->password      = $password;
+
+		if ( null !== $base_path ) {
+			self::$base_path = $base_path;
+		}
 
 		self::$client = new \GuzzleHttp\Client( [
 			'base_uri' => 'https://restapi.actonsoftware.com'
