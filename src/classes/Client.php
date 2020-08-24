@@ -51,6 +51,10 @@ class Client {
 		}
 	}
 
+	public static function getClientToken() {
+		return self::$access_token;
+	}
+
 
 	/**
 	 * @return mixed

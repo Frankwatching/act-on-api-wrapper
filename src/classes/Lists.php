@@ -5,49 +5,39 @@ namespace Frankwatching\ActOn;
 use Exception;
 
 use Frankwatching\ActOn\Client;
+use GuzzleHttp\Psr7\MultipartStream;
+use GuzzleHttp\Psr7\Request;
 
 class Lists {
 	private static $lists = null;
 
 	public static function createList( $listname, $uploadspecs = [], $quotecharacter = 'SINGLE_QUOTE', $foldername = '', $headings = 'Y', $fieldseperator = 'COMMA' ) {
-		try {
-			$data = [
-				[
-					'name' => 'listname',
-					'contents' => $listname,
-				],
-				[
-					'name' => 'uploadspecs',
-					'contents' => json_encode( $uploadspecs ),
-				],
-				[
-					'name' => 'quotecharacter',
-					'contents' => $quotecharacter,
-				],
-//				[
-//					'name' => 'headings',
-//					'contents' => $headings,
-//				],
-//				[
-//					'name' => 'fieldseperator',
-//					'contents' => $fieldseperator
-//				]
-//				'listname'       => $listname,
-//				'uploadspecs'    => json_encode( $uploadspecs ),
-//				'quotecharacter' => $quotecharacter,
-//				'foldername'     => $foldername,
-//				'headings'       => $headings,
-//				'fieldseperator' => $fieldseperator,
-			];
+		$curl = curl_init();
 
-			$response = Client::post( '/list', $data, [
-				'Content-Type' => 'multipart/form-data'
-			], true );
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => "https://restapi.actonsoftware.com/api/1/list",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_POSTFIELDS => [
+				'listname' => $listname,
+				'quotecharacter' => 'SINGLE_QUOTE',
+				'uploadspecs' => json_encode( $uploadspecs )
+			],
+			CURLOPT_HTTPHEADER => [
+				'Authorization: Bearer ' . \Frankwatching\ActOn\Client::getClientToken()
+			],
+		));
 
-			return $response;
-		} catch ( Exception $e ) {
-			return $e;
-		}
+		$response = curl_exec($curl);
+
+		curl_close($curl);
+
+		return $response;
 	}
 
 	public static function getListsOfAssets() {
@@ -56,7 +46,8 @@ class Lists {
 			try {
 
 				self::$lists = Client::get( '/list?listingtype=CONTACT_LIST' );
-			} catch( Exception $e ) {
+			}
+			catch ( Exception $e ) {
 				return [];
 			}
 		}
@@ -67,12 +58,13 @@ class Lists {
 	public static function getListByName( $name ) {
 		$lists = self::getListsOfAssets();
 
-		$lists = array_filter( $lists, function( $list ) use ( $name ) {
+		$lists = array_filter( $lists, function ( $list ) use ( $name ) {
 			return $list['name'] === $name;
 		} );
 
 		if ( ! empty( $lists ) ) {
 			$lists = reset( $lists );
+
 			return $lists;
 		}
 
@@ -85,7 +77,8 @@ class Lists {
 			$list = Client::get( "/list/$listId" );
 
 			return $list['headers'];
-		} catch( Exception $e ) {
+		}
+		catch ( Exception $e ) {
 			return [
 				'Could not download list.'
 			];

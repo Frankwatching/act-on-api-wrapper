@@ -3,6 +3,7 @@
 namespace Frankwatching\ActOn;
 
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
 
 class Ete {
 	public static $client = null;
@@ -17,63 +18,92 @@ class Ete {
 		self::setClient( $access_token );
 	}
 
-	public static function send() {
+	public static function send(
+		$to_address,
+		$transactional = true,
+		$personalization = [],
+		$from_address = '',
+		$from_display_name = '',
+		$cc_address_list = [],
+		$reply_to_address = '',
+		$tag_list = [],
+		$external_id = 0,
+		$track_opens = true,
+		$track_clicks = true,
+		$delivery_when_delayed = false
+	) {
 
-//		var_dump( Account::get() );
+		$json = [
+			'envelope' => [
+				'toAddress' => $to_address,
+			],
+			'content'  => [
+				'personalizationDataMap' => $personalization
+			],
+			'metadata' => [
+				'transactional' => $transactional
+			],
+			'actions'  => []
+		];
 
-		var_dump( '/ete/v1/email/' . self::$account_id . '/t-0003' );
-		exit;
+		if ( ! empty( $cc_address_list ) ) {
+			$json['envelope']['ccAddressList'] = $cc_address_list;
+		}
 
-//		try {
-			$result = self::$client->request( 'POST', '/ete/v1/email/' . self::$account_id . '/t-0003', [
+		if ( ! empty( $from_address ) ) {
+			$json['envelope']['fromAddress'] = $from_address;
+		}
+
+		if ( ! empty( $cc_address_list ) ) {
+			$json['envelope']['fromDisplayName'] = $from_display_name;
+		}
+
+		if ( ! empty( $cc_address_list ) ) {
+			$json['envelope']['replyToAddress'] = $reply_to_address;
+		}
+
+		if ( ! empty( $tag_list ) ) {
+			$json['metadata']['tagList'] = $tag_list;
+		}
+
+		if ( ! empty( $external_id ) ) {
+			$json['metadata']['externalId'] = $external_id;
+		}
+
+		if ( $track_opens ) {
+			$json['actions']['trackOpens'] = $track_opens;
+		}
+
+		if ( $track_clicks ) {
+			$json['actions']['trackClicks'] = $track_clicks;
+		}
+
+		if ( $delivery_when_delayed ) {
+			$json['actions']['deliveryWhenDelayed'] = $delivery_when_delayed;
+		}
+
+		try {
+			$result = self::$client->post( '/ete/v1/email/' . self::$account_id . '/t-0003', [
 				'headers' => self::$headers,
-				'json'    => [
-					'EmailDetails' => [
-						'envelope' => [
-							'toAddress'       => 'danny@frankwatching.com',
-							'ccAddressList'   => [],
-							'fromAddress'     => 'dx@frankwatching.com',
-							'fromDisplayName' => 'Frankwatching',
-							'replyToAddress'  => 'noreply@frankwatching.com'
-						],
-						'content'  => [
-							'personalizationDataMap' => [
-								'Account.COMPANY'     => 'Frankwatching',
-								'Account.BIZ_ADDRESS' => 'Test',
-								'Voornaam'            => 'Danny'
-							],
-						],
-						'metadata' => [
-							'transactional' => true,
-							'tagList'       => [],
-							'externalId'    => '123213jlcdajlfcjdks'
-						],
-						'actions'  => [
-							'trackOpens'          => true,
-							'trackClicks'         => true,
-							'deliveryWhenDelayed' => 'FALSE'
-						]
-					]
-				]
+				'json'    => $json
 			] );
 
-			var_dump( $result->getHeaders() );
-			exit;
-
-			var_dump( $result );
-			exit;
-//		}
-//		catch ( ServerException $e ) {
-//			var_dump( $e );
-//			exit;
-//		}
+			return $result;
+		}
+		catch ( ServerException $e ) {
+			return json_decode( $e->getResponse()->getBody() );
+		}
+		catch ( ClientException $e ) {
+			return json_decode( $e->getResponse()->getBody() );
+		}
 	}
 
 
 	public static function setClient( $access_token ) {
 		self::$headers = [
 			'Authorization' => 'Bearer ' . self::$access_token,
-			'Content-Type'  => 'application/json'
+			'Content-Type'  => 'application/json',
+			'debug'         => true
 		];
 
 		if ( null === self::$client ) {
