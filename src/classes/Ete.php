@@ -83,12 +83,12 @@ class Ete {
 		}
 
 		try {
-			$result = self::$client->post( '/ete/v1/email/' . self::$account_id . '/t-0003', [
+			$request = self::$client->post( '/ete/v1/email/' . self::$account_id . '/t-0003', [
 				'headers' => self::$headers,
 				'json'    => $json
 			] );
 
-			return $result;
+			return json_decode( $request->getBody()->getContents(), true );
 		}
 		catch ( ServerException $e ) {
 			return json_decode( $e->getResponse()->getBody() );

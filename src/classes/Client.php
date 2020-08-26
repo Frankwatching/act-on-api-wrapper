@@ -110,7 +110,6 @@ class Client {
 	public static function post( $endpoint, $body, $headers = [], $multipart = false ) {
 		$options = [
 			'headers' => array_merge( self::$headers, $headers ),
-			'debug'   => true
 		];
 
 		if ( $multipart ) {
@@ -135,8 +134,8 @@ class Client {
 			$request = self::$client->request( 'POST', self::$base_path . $endpoint, $options );
 
 			return json_decode( $request->getBody()->getContents(), true );
-		} catch ( BadResponseException $e ) {
-			throw new Exception( $e );
+		} catch ( RequestException $e ) {
+			return json_decode( $e->getResponse()->getBody() );
 		}
 	}
 
