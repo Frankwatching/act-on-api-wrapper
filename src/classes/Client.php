@@ -153,7 +153,7 @@ class Client {
 		try {
 			$request = self::$client->request( 'GET', self::$base_path . $endpoint, $options );
 		} catch ( BadResponseException $e ) {
-			throw new Exception( $e->getCode() );
+			return json_decode( $e->getResponse()->getBody() );
 		}
 
 		return json_decode( $request->getBody()->getContents(), true );
