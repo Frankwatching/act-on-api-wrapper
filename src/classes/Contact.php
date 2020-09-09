@@ -33,6 +33,11 @@ class Contact {
 
 		try {
 			$contact = Client::get( "/list/lookup/$listId?email=$emailAddress" );
+
+			if ( 10162 === $contact->errorCode ) {
+				return false;
+			}
+
 		} catch( \Exception $e ) {
 			return false;
 		}
