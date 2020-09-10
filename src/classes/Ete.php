@@ -30,7 +30,8 @@ class Ete {
 		$external_id = 0,
 		$track_opens = true,
 		$track_clicks = true,
-		$delivery_when_delayed = false
+		$delivery_when_delayed = false,
+		$template_id
 	) {
 
 		$json = [
@@ -83,7 +84,7 @@ class Ete {
 		}
 
 		try {
-			$request = self::$client->post( '/ete/v1/email/' . self::$account_id . '/t-0003', [
+			$request = self::$client->post( '/ete/v1/email/' . self::$account_id . '/' . $template_id, [
 				'headers' => self::$headers,
 				'json'    => $json
 			] );
