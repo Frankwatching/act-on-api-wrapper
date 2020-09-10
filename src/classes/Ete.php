@@ -19,6 +19,7 @@ class Ete {
 	}
 
 	public static function send(
+		$template_id,
 		$to_address,
 		$transactional = true,
 		$personalization = [],
@@ -30,8 +31,7 @@ class Ete {
 		$external_id = 0,
 		$track_opens = true,
 		$track_clicks = true,
-		$delivery_when_delayed = false,
-		$template_id
+		$delivery_when_delayed = false
 	) {
 
 		$json = [
