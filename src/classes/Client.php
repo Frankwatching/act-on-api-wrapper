@@ -165,10 +165,10 @@ class Client {
 	 *
 	 * @return mixed
 	 */
-	public static function put( $endpoint, $body ) {
+	public static function put( $endpoint, $body, $headers = [] ) {
 
 		$options = [
-			'headers' => self::$headers,
+			'headers' => array_merge( self::$headers, $headers ),
 			'json'    => $body,
 		];
 
@@ -179,5 +179,9 @@ class Client {
 		}
 
 		return json_decode( $request->getBody()->getContents() );
+	}
+
+	public static function getClient() {
+		return self::$client;
 	}
 }

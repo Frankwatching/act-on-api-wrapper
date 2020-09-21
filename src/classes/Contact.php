@@ -2,6 +2,8 @@
 
 namespace Frankwatching\ActOn;
 
+use Namshi\Cuzzle\Formatter\CurlFormatter;
+
 class Contact {
 	public static function add( array $contact, $listId, $returnContact = 'N' ) {
 		try {
@@ -14,6 +16,10 @@ class Contact {
 
 	public static function get( $listId, $recordId ) {
 		return Client::get( "/list/$listId/record/$recordId" );
+	}
+
+	public static function updateById( $contactId, $listId, $contact ) {
+		return Client::put( "/list/$listId/record/$contactId", $contact );
 	}
 
 	public static function updateByEmail( $emailAddress, $listId, $contact ) {
@@ -43,5 +49,65 @@ class Contact {
 		}
 
 		return $contact;
+	}
+
+	public static function optOut( $emailAddress ) {
+		$client = Client::getClient();
+
+		$array = [
+			'danny@frankwatching.com'
+		];
+
+//		header('Content-Type: text/csv; charset=utf-8');
+//		header('Content-Disposition: attachment; filename=data.csv');
+//
+		$output = fopen('./optout.csv', 'w');
+
+		fputcsv($output, [ $emailAddress ] );
+
+		$metaDatas = stream_get_meta_data($output);
+
+
+
+		$options = [
+			'multipart' => [
+				[
+					'name'     => 'file',
+					'contents' => './optout.csv',
+//					'filename' => 'optout.csv',
+				],
+			],
+			'headers' => [
+				'Authorization' => 'Bearer ' . Client::getClientToken()
+			]
+		];
+
+		$request = $client->request( 'PUT', 'api/1/list/optout', $options );
+
+		$result = json_decode( $request->getBody()->getContents() );
+
+		var_dump( $result );
+		exit;
+//
+//		fclose($output);
+//
+//		var_dump( $output );
+//		exit;
+//
+//		exit;
+//
+//		$temp = tmpfile();
+//		fwrite($temp, "writing to tempfile");
+//		fseek($temp, 0);
+//
+//		$metaDatas = stream_get_meta_data($temp);
+//
+//		var_dump( $metaDatas );
+//		exit;
+//
+//		echo fread($temp, 1024);
+//		fclose($temp); // this removes the file
+//
+//		var_dump( $client );
 	}
 }
