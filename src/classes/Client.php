@@ -120,18 +120,6 @@ class Client {
 			$options['json'] = $body;
 		}
 
-//		var_dump( $options );
-//		exit;
-
-//		var_dump( $body );
-//		exit;
-
-//		var_dump( $options );
-//		exit;
-
-//		var_dump( $options );
-//		exit;
-
 		try {
 			$request = self::$client->request( 'POST', self::$base_path . $endpoint, $options );
 

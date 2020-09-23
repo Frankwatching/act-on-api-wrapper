@@ -9,25 +9,31 @@ class EmailCampaign {
 		$sender_email,
 		$sender_name,
 		$send_to_ids,
-		$when = 0,
 		$subject,
 		$text_body,
 		$html_body,
-		$is_custom = 'Y'
+		$header = 0,
+		$footer = 0,
+		$is_custom = 'Y',
+		$when = 0
 	) {
 		return Client::post( '/message/custom/send', [
-			'senderemail' => 'nieuwsbrief@frankwatching.com',
-			'sendername' => 'Frankwatching NieuwsAlert',
-			'sendtoids' => 'q-002d',
-			'when' => $when,
-			'subject' => 'Frankwatching Nieuwsalert',
-			'textbody' => 'Dit is de body text',
-			'htmlbody' => '<span>Dit is de HTML text</span>',
-			'iscustom' => 'Y',
-			'headerid' => 1,
-			'footerid' => 1
+			'id'          => 'custom',
+			'senderemail' => $sender_email,
+			'sendername'  => $sender_name,
+			'sendtoids'   => $send_to_ids,
+			'when'        => $when,
+			'subject'     => $subject,
+			'textbody'    => $text_body,
+			'htmlbody'    => $html_body,
+			'iscustom'    => $is_custom,
+			'headerid'    => $header,
+			'footerid'    => $footer
 		], [
 			'Content-Type' => 'application/x-www-form-urlencoded',
+			'Accept'       => 'application/json',
 		], false, true );
 	}
 }
+
+
