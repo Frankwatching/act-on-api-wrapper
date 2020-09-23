@@ -107,13 +107,15 @@ class Client {
 	 * @return mixed
 	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
-	public static function post( $endpoint, $body, $headers = [], $multipart = false ) {
+	public static function post( $endpoint, $body, $headers = [], $multipart = false, $url_encoded = false ) {
 		$options = [
 			'headers' => array_merge( self::$headers, $headers ),
 		];
 
 		if ( $multipart ) {
 			$options['multipart'] = $body;
+		} elseif ( $url_encoded ) {
+			$options['form_params'] = $body;
 		} else {
 			$options['json'] = $body;
 		}

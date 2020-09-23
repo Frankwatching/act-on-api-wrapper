@@ -76,7 +76,7 @@ class Lists {
 
 			$list = Client::get( "/list/$listId" );
 
-			return $list['headers'];
+			return $list;
 		}
 		catch ( Exception $e ) {
 			return [
