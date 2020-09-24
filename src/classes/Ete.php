@@ -36,7 +36,10 @@ class Ete {
 
 		$json = [
 			'envelope' => [
-				'toAddress' => $to_address,
+				'toAddress'       => $to_address,
+				'fromAddress'     => $from_address,
+				'fromDisplayName' => $from_display_name,
+				'replyToAddress'  => $reply_to_address,
 			],
 			'content'  => [
 				'personalizationDataMap' => $personalization
