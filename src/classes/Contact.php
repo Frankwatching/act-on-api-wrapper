@@ -40,7 +40,7 @@ class Contact {
 		try {
 			$contact = Client::get( "/list/lookup/$listId?email=$emailAddress" );
 
-			if ( is_object( $contact ) && property_exists( $contact, 'errorCode' ) && 10162 === $contact->errorCode ) {
+			if ( ! is_array( $contact ) ) {
 				return false;
 			}
 
