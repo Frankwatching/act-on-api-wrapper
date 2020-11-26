@@ -52,6 +52,10 @@ class Lists {
 			}
 		}
 
+		if ( ! is_array( self::$lists ) ) {
+			return false;
+		}
+
 		return self::$lists['result'];
 	}
 
