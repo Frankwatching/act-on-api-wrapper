@@ -46,8 +46,7 @@ class Lists {
 			try {
 
 				self::$lists = Client::get( '/list?listingtype=CONTACT_LIST' );
-			}
-			catch ( Exception $e ) {
+			} catch ( Exception $e ) {
 				return [];
 			}
 		}
@@ -77,15 +76,15 @@ class Lists {
 
 	public static function download( $listId ) {
 		try {
-
 			$list = Client::get( "/list/$listId" );
+		} catch ( Exception $e ) {
+			return [];
+		}
 
-			return $list;
+		if ( ! is_array( $list ) ) {
+			return false;
 		}
-		catch ( Exception $e ) {
-			return [
-				'Could not download list.'
-			];
-		}
+
+		return $list;
 	}
 }
