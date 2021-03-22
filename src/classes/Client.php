@@ -7,6 +7,7 @@ ini_set( 'error_reporting', E_ALL );
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\BadResponseException;
 use Exception;
 use Frankwatching\ActOn;
@@ -69,13 +70,16 @@ class Client {
 			'password'      => $this->password,
 		];
 
-		$request = self::$client->post( '/token', [
-			'form_params' => $body
-		] );
+		try {
+			$request = self::$client->post( '/token', [
+				'form_params' => $body
+			] );
 
-		$tokens = json_decode( $request->getBody()->getContents() );
-
-		return $tokens;
+			$tokens = json_decode( $request->getBody()->getContents() );
+			return $tokens;
+		} catch ( ClientException $e ) {
+			return [];
+		}
 	}
 
 	/**
@@ -91,13 +95,17 @@ class Client {
 			'refresh_token' => $refreshToken,
 		];
 
-		$request = self::$client->post( '/token', [
-			'form_params' => $body
-		] );
+		try {
+			$request = self::$client->post( '/token', [
+				'form_params' => $body
+			] );
 
-		$tokens = json_decode( $request->getBody()->getContents() );
+			$tokens = json_decode( $request->getBody()->getContents() );
 
-		return $tokens;
+			return $tokens;
+		} catch( ClientException $e ) {
+			return [];
+		}
 	}
 
 	/**
