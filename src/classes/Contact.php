@@ -22,6 +22,10 @@ class Contact {
 		return Client::put( "/list/$listId/record/$contactId", $contact );
 	}
 
+	public static function getByCookie( $cookieId, $listId ) {
+		return Client::get( "/list/lookup/$listId?cookieid=$cookieId" );
+	}
+
 	public static function updateByEmail( $emailAddress, $listId, $contact ) {
 		$emailAddress = rawurlencode( $emailAddress );
 
