@@ -112,7 +112,7 @@ class Ete {
 
 		if ( null === self::$client ) {
 			self::$client = new \GuzzleHttp\Client( [
-				'base_uri' => 'https://restapi.actonsoftware.com',
+				'base_uri' => 'https://api-eu.actonsoftware.com',
 			] );
 		}
 	}

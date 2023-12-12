@@ -15,7 +15,7 @@ class Lists {
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
-			CURLOPT_URL => "https://restapi.actonsoftware.com/api/1/list",
+			CURLOPT_URL => "https://api-eu.actonsoftware.com/api/1/list",
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_ENCODING => "",
 			CURLOPT_MAXREDIRS => 10,
