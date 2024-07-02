@@ -2,22 +2,23 @@
 
 namespace Frankwatching\ActOn;
 
+use Exception;
 use Frankwatching\ActOn\Client;
 
-class Account {
+class Account
+{
 
-
-
-	public static function get() {
+	public static function get()
+	{
 		try {
 
-			$account = Client::get( '/account' );
+			$account = Client::get('/account');
 
-			var_dump( $account );
+			var_dump($account);
 			exit;
-
-		} catch( Exception $e ) {
+		} catch (Exception $e) {
 			return [];
 		}
 	}
 }
+
